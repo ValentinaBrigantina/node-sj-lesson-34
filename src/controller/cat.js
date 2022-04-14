@@ -1,4 +1,5 @@
 const catModel = require('../model/cat')
+const userModel = require('../model/user')
 const { v4: uuid } = require('uuid')
 
 const getNotFoundResponse = (res) => {
@@ -10,6 +11,16 @@ const getNotFoundResponse = (res) => {
         }
     }
 }
+
+const getUnprocessableEntityResponse = (res) => {
+    res.writeHead(422)
+    return {
+        error: {
+            message: "Unprocessable Entity",
+            code: 422
+        }
+    }
+} 
 
 const parseJsonBody = (request) => new Promise((resolve, reject) => {
     let rawJson = ''
@@ -55,7 +66,7 @@ const cache = createCache()
 
 exports.getCats = async () => {
     const cats = await catModel.fetchAllCats()
-    if (!cats.lenght) {
+    if (!cats) {
         return getNotFoundResponse(res)
     }
     return cats
@@ -69,8 +80,14 @@ exports.getCatById = async (res, catId) => {
     return cat
 }
 
-exports.createCat = async (req) => {
+exports.createCat = async (req, res) => {
     const catData = await parseJsonBody(req)
+    if (catData.ownerId) {
+        const users = await userModel.fetchAllUsers()
+        if (!(users.some(user => user.id === catData.ownerId))) {
+            return getUnprocessableEntityResponse(res)
+        }
+    }
     catData.id = uuid()
     await catModel.addNewCat(catData)
     return {
@@ -80,6 +97,12 @@ exports.createCat = async (req) => {
 
 exports.updateCatById = async (req, res, catId) => {
     const updateData = await parseJsonBody(req)
+    if (updateData.ownerId) {
+        const users = await userModel.fetchAllUsers()
+        if (!(users.some(user => user.id === updateData.ownerId))) {
+            return getUnprocessableEntityResponse(res)
+        }
+    }
     const cat = await catModel.fetchCatById(catId)
     const updatedCat = { ...cat, ...updateData }
     const updateResult = await catModel.update(updatedCat)

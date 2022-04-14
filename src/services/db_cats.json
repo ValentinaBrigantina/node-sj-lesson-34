@@ -16,5 +16,15 @@
         "name": "Суслик",
         "image": "https://cdn.lifehacker.ru/wp-content/uploads/2018/12/Kak-fotografirovat-kotikov-19-sovetov-ot-professionala_1544744286-1280x640.jpg",
         "id": "e8fb91c5-e9a7-4c7b-862e-5039b7b04307"
+    },
+    {
+        "name": "New",
+        "image": "https://cdn.lifehacker.ru/wp-content/uploads/2018/12/Kak-fotografirovat-kotikov-19-sovetov-ot-professionala_1544744286-1280x640.jpg",
+        "id": "e8kkk1c5-e9a7-4c7b-862e-5039b7b04307",
+        "ownerId": "e81b91c5-e9a7-4c7b-862e-5031b7b04307"
+    },
+    {
+        "ownerId": "e81b91c5-e9a7-4c7b-862e-5031b7b04307",
+        "id": "9bad92f1-0dbc-4af2-9afb-b25755179d10"
     }
 ]
