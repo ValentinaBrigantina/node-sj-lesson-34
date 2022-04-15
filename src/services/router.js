@@ -32,23 +32,28 @@ router.on('GET', '/user/:userId', async (req, res, { userId }) => {
     res.end(JSON.stringify(result))
 })
 
-router.on('GET', '/user', async(req, res) => {
-    const result = await userController.getUsers()
+router.on('GET', '/user', async (req, res) => {
+    const result = await userController.getUsers(req, res)
     res.end(JSON.stringify(result))
 })
 
-router.on('POST', '/user', async(req, res) => {
+router.on('POST', '/user', async (req, res) => {
     const result = await userController.createUser(req)
     res.end(JSON.stringify(result))
 })
 
-router.on('PUT', '/user/:userId', async(req, res, { userId }) => {
+router.on('PUT', '/user/:userId', async (req, res, { userId }) => {
     const result = await userController.updateUserById(req, res, userId)
     res.end(JSON.stringify(result))
 })
 
-router.on('DELETE', '/user/:userId', async(req, res, { userId }) => {
+router.on('DELETE', '/user/:userId', async (req, res, { userId }) => {
     const result = await userController.deleteUserById(res, userId)
+    res.end(JSON.stringify(result))
+})
+
+router.on('DELETE', '/user', async (req, res) => {
+    const result = await userController.deleteUser(req, res)
     res.end(JSON.stringify(result))
 })
 

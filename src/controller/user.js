@@ -1,5 +1,7 @@
 const userModel = require('../model/user')
 const { v4: uuid } = require('uuid')
+const { URL } = require('url')
+const { host, port } = require('../utils/config')
 
 const getNotFoundResponse = (res) => {
     res.writeHead(404)
@@ -7,6 +9,16 @@ const getNotFoundResponse = (res) => {
         error: {
             message: "Not found",
             code: 404
+        }
+    }
+}
+
+const getBadRequestResponse = (res) => {
+    res.writeHead(400)
+    return {
+        error: {
+            message: "Bad Request",
+            code: 400
         }
     }
 }
@@ -32,6 +44,15 @@ const parseJsonBody = request => new Promise((resolve, reject) => {
         .on('error', reject)
 })
 
+const parseQueryString = (request) => {
+    const parseUrl = new URL(request.url, `http://${host}:${port}`)
+    const queryParams = {}
+    for (const [key, value] of parseUrl.searchParams.entries()) {
+        queryParams[key] = value
+    }
+    return queryParams
+}
+
 exports.getUserAndCatsById = async (res, userId) => {
     const user = await userModel.fetchUserById(userId)
     if (!user) {
@@ -41,11 +62,24 @@ exports.getUserAndCatsById = async (res, userId) => {
     return user
 }
 
-exports.getUsers = async () => {
+exports.getUsers = async (req, res) => {
     const users = await userModel.fetchAllUsers()
     if (!users) {
         return getNotFoundResponse(res)
     }
+    const queryParams = parseQueryString(req)
+    
+    if (Object.keys(queryParams).length > 0) {
+        if (queryParams.limit && queryParams.offset) {
+            const limit = parseInt(queryParams.limit)
+            const offset = parseInt(queryParams.offset)
+            const start = limit * offset
+            const end = start + limit
+            return users.slice(start, end)
+        } else {
+            return getBadRequestResponse(res)
+        }
+    }   
     return users
 }
 
@@ -70,11 +104,20 @@ exports.updateUserById = async (req, res, userId) => {
 }
 
 exports.deleteUserById = async (res, userId) => {
-    const updateResult = await userModel.delete(userId)
+    const updateResult = await userModel.deleteById(userId)
     if (!updateResult) {
         return getNotFoundResponse(res)
     }
     return {
         id: userId
     }
+}
+
+exports.deleteUser = async (req, res) => {
+    const userData = await parseJsonBody(req)
+    const updateResult = await userModel.delete(userData)
+    if (!updateResult) {
+        return getNotFoundResponse(res)
+    }
+    return userData
 }

@@ -1,8 +1,6 @@
 const { createServer } = require('http')
 const router = require('./services/router')
-
-const port = 3000
-const host = '127.0.0.1'
+const { host, port } = require('./utils/config')
 
 const server = createServer((req, res) => {
     router.lookup(req, res)

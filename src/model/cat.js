@@ -53,9 +53,7 @@ exports.update = async (dataOfNewCat) => {
 }
 
 exports.delete = async (id) => {
-    // 1 взять всех котов
     const cats = await readJSONAsync(dbJsonPath)
-    // 2 удалить кота по id
     let catBeenFound = false
     const filteredCats = cats.filter(cat => {
         if (cat.id !== id) {
@@ -65,7 +63,6 @@ exports.delete = async (id) => {
         return false
     })
     if (catBeenFound) {
-        // 3 сохранить обновленный масив котов
         await writeJSONAsync(dbJsonPath, filteredCats)
         return true
     }
